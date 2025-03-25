@@ -4,50 +4,49 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/common/Card";
-import { UserAvatar } from "@/components/common/UserAvatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarClock, Edit, Plus, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Calendar, Clock, MapPin, MessageSquare, Plus, Search, User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserAvatar } from "@/components/common/UserAvatar";
+import { format } from "date-fns";
 
-interface FeedbackItem {
+interface FeedbackSession {
   id: number;
   employee: {
     name: string;
     position: string;
     avatar?: string;
   };
-  date: string;
-  status: "scheduled" | "completed" | "canceled";
+  date: Date;
+  timeSlot: string;
+  location: string;
+  topics: string[];
   notes?: string;
+  status: "scheduled" | "completed" | "cancelled";
 }
 
 export const FeedbackList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   
   // Mock feedback data
-  const feedbacks: FeedbackItem[] = [
+  const feedbackSessions: FeedbackSession[] = [
     {
       id: 1,
       employee: {
         name: "Michael Chen",
         position: "Software Engineer",
       },
-      date: "Jun 15, 2023 · 10:30 AM",
+      date: new Date(2023, 10, 15),
+      timeSlot: "10:30 AM - 11:30 AM",
+      location: "Meeting Room 1",
+      topics: ["Performance review", "Current projects", "Career goals"],
+      notes: "Discuss recent achievements and upcoming challenges",
       status: "scheduled",
-      notes: "Quarterly performance review and goal setting session",
     },
     {
       id: 2,
@@ -55,9 +54,11 @@ export const FeedbackList = () => {
         name: "Sarah Williams",
         position: "Product Designer",
       },
-      date: "Jun 12, 2023 · 2:00 PM",
-      status: "completed",
-      notes: "Monthly check-in and project discussion",
+      date: new Date(2023, 10, 18),
+      timeSlot: "2:30 PM - 3:30 PM",
+      location: "Virtual (Zoom)",
+      topics: ["Design systems", "Collaboration with engineering", "Professional development"],
+      status: "scheduled",
     },
     {
       id: 3,
@@ -65,9 +66,11 @@ export const FeedbackList = () => {
         name: "David Kim",
         position: "Marketing Specialist",
       },
-      date: "Jun 10, 2023 · 11:00 AM",
+      date: new Date(2023, 10, 10),
+      timeSlot: "9:00 AM - 10:00 AM",
+      location: "Coffee Shop",
+      topics: ["Campaign performance", "Quarterly goals"],
       status: "completed",
-      notes: "Career development and skill improvement discussion",
     },
     {
       id: 4,
@@ -75,83 +78,86 @@ export const FeedbackList = () => {
         name: "Jessica Rodriguez",
         position: "Customer Success",
       },
-      date: "Jun 8, 2023 · 3:30 PM",
-      status: "canceled",
-      notes: "Monthly performance review",
-    },
-    {
-      id: 5,
-      employee: {
-        name: "Alex Johnson",
-        position: "UX Researcher",
-      },
-      date: "Jun 20, 2023 · 1:00 PM",
+      date: new Date(2023, 10, 22),
+      timeSlot: "1:00 PM - 2:00 PM",
+      location: "Meeting Room 3",
+      topics: ["Client relationships", "Process improvements", "Team collaboration"],
       status: "scheduled",
-      notes: "Project feedback and upcoming sprint planning",
     },
   ];
 
-  const filteredFeedbacks = feedbacks.filter((feedback) => {
-    const matchesSearch = feedback.employee.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || feedback.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredSessions = feedbackSessions.filter((session) =>
+    session.employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const upcomingFeedbacks = filteredFeedbacks.filter(
-    (f) => f.status === "scheduled"
-  );
-  const pastFeedbacks = filteredFeedbacks.filter(
-    (f) => f.status === "completed" || f.status === "canceled"
-  );
+  const upcomingSessions = filteredSessions.filter((session) => session.status === "scheduled");
+  const completedSessions = filteredSessions.filter((session) => session.status === "completed");
+  const cancelledSessions = filteredSessions.filter((session) => session.status === "cancelled");
 
   const statusStyles = {
-    scheduled: "bg-amber-100 text-amber-800 border-amber-200",
-    completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    canceled: "bg-rose-100 text-rose-800 border-rose-200",
+    scheduled: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    completed: "bg-blue-100 text-blue-800 border-blue-200",
+    cancelled: "bg-red-100 text-red-800 border-red-200",
   };
 
-  const FeedbackCard = ({ feedback }: { feedback: FeedbackItem }) => (
+  const FeedbackCard = ({ session }: { session: FeedbackSession }) => (
     <Card className="animate-fade-in">
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <UserAvatar 
-              name={feedback.employee.name} 
-              image={feedback.employee.avatar}
+              name={session.employee.name} 
+              image={session.employee.avatar}
               size="md"
             />
             <div>
-              <h3 className="font-medium">{feedback.employee.name}</h3>
+              <h3 className="font-medium">{session.employee.name}</h3>
               <p className="text-sm text-muted-foreground">
-                {feedback.employee.position}
+                {session.employee.position}
               </p>
             </div>
           </div>
           <Badge 
             variant="outline" 
-            className={statusStyles[feedback.status]}
+            className={statusStyles[session.status]}
           >
-            {feedback.status.charAt(0).toUpperCase() + feedback.status.slice(1)}
+            {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
           </Badge>
         </div>
         
-        <div className="mt-3 flex items-center gap-1 text-sm text-muted-foreground">
-          <CalendarClock className="h-3.5 w-3.5" />
-          <span>{feedback.date}</span>
+        <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span>{format(session.date, "MMM d, yyyy")}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span>{session.timeSlot}</span>
+          </div>
+          <div className="flex items-center gap-2 col-span-2">
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <span>{session.location}</span>
+          </div>
         </div>
         
-        {feedback.notes && (
-          <p className="mt-3 text-sm border-t pt-3">{feedback.notes}</p>
-        )}
+        <div className="mt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Topics to Discuss</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {session.topics.map((topic, index) => (
+              <Badge key={index} variant="secondary" className="font-normal">
+                {topic}
+              </Badge>
+            ))}
+          </div>
+        </div>
         
         <div className="mt-4 flex justify-end">
-          <Button asChild variant="ghost" size="sm" className="gap-1">
-            <Link to={`/feedback/${feedback.id}`}>
-              <Edit className="h-3.5 w-3.5" />
-              <span>View details</span>
+          <Button asChild variant="ghost" size="sm">
+            <Link to={`/feedback/${session.id}`}>
+              View details
             </Link>
           </Button>
         </div>
@@ -162,42 +168,30 @@ export const FeedbackList = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold tracking-tight">Feedback 1:1</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          1:1 Feedback Sessions
+        </h2>
         <p className="text-muted-foreground">
-          Schedule and manage one-on-one feedback sessions with your team members.
+          Schedule and manage feedback sessions with your team members.
         </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex gap-2 flex-1 max-w-md">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Select
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="canceled">Canceled</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         
-        <Button className="gap-1">
-          <Plus className="h-4 w-4" />
-          <span>New Feedback</span>
+        <Button asChild className="gap-1">
+          <Link to="/feedback/new/new">
+            <Plus className="h-4 w-4" />
+            <span>New Feedback Session</span>
+          </Link>
         </Button>
       </div>
       
@@ -205,48 +199,77 @@ export const FeedbackList = () => {
         <TabsList>
           <TabsTrigger value="upcoming">
             Upcoming
-            {upcomingFeedbacks.length > 0 && (
+            {upcomingSessions.length > 0 && (
               <Badge variant="secondary" className="ml-2">
-                {upcomingFeedbacks.length}
+                {upcomingSessions.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="past">
-            Past Sessions
+          <TabsTrigger value="completed">
+            Completed
+            {completedSessions.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {completedSessions.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="cancelled">
+            Cancelled
           </TabsTrigger>
         </TabsList>
+        
         <TabsContent value="upcoming" className="mt-4">
-          {upcomingFeedbacks.length === 0 ? (
+          {upcomingSessions.length === 0 ? (
             <div className="text-center py-12">
-              <h3 className="text-lg font-medium">No upcoming feedback sessions</h3>
+              <h3 className="text-lg font-medium">No upcoming sessions</h3>
               <p className="text-muted-foreground mt-1">
-                Schedule a new feedback session with your team members.
+                Schedule a new feedback session with a team member.
               </p>
-              <Button className="mt-4 gap-1">
-                <Plus className="h-4 w-4" />
-                <span>Schedule Feedback</span>
+              <Button asChild className="mt-4 gap-1">
+                <Link to="/feedback/new/new">
+                  <Plus className="h-4 w-4" />
+                  <span>New Feedback Session</span>
+                </Link>
               </Button>
             </div>
           ) : (
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {upcomingFeedbacks.map((feedback) => (
-                <FeedbackCard key={feedback.id} feedback={feedback} />
+              {upcomingSessions.map((session) => (
+                <FeedbackCard key={session.id} session={session} />
               ))}
             </div>
           )}
         </TabsContent>
-        <TabsContent value="past" className="mt-4">
-          {pastFeedbacks.length === 0 ? (
+        
+        <TabsContent value="completed" className="mt-4">
+          {completedSessions.length === 0 ? (
             <div className="text-center py-12">
-              <h3 className="text-lg font-medium">No past feedback sessions</h3>
+              <h3 className="text-lg font-medium">No completed sessions</h3>
               <p className="text-muted-foreground mt-1">
-                Past feedback sessions will appear here.
+                Completed sessions will appear here.
               </p>
             </div>
           ) : (
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {pastFeedbacks.map((feedback) => (
-                <FeedbackCard key={feedback.id} feedback={feedback} />
+              {completedSessions.map((session) => (
+                <FeedbackCard key={session.id} session={session} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="cancelled" className="mt-4">
+          {cancelledSessions.length === 0 ? (
+            <div className="text-center py-12">
+              <h3 className="text-lg font-medium">No cancelled sessions</h3>
+              <p className="text-muted-foreground mt-1">
+                Cancelled sessions will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+              {cancelledSessions.map((session) => (
+                <FeedbackCard key={session.id} session={session} />
               ))}
             </div>
           )}

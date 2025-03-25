@@ -8,11 +8,11 @@ import { PDIForm } from "@/components/pdi/PDIForm";
 const PDI = () => {
   const { id, action } = useParams<{ id?: string; action?: string }>();
   
-  if (id && action === "edit") {
+  if (id === "new" && action === "new") {
     return <PDIForm />;
   }
   
-  if (id && action === "new") {
+  if (id && action === "edit") {
     return <PDIForm />;
   }
   

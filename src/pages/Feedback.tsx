@@ -8,11 +8,11 @@ import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 const Feedback = () => {
   const { id, action } = useParams<{ id?: string; action?: string }>();
   
-  if (id && action === "edit") {
+  if (id === "new" && action === "new") {
     return <FeedbackForm />;
   }
   
-  if (id && action === "new") {
+  if (id && action === "edit") {
     return <FeedbackForm />;
   }
   

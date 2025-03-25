@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,6 @@ interface PDIItem {
 export const PDIList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Mock PDI data
   const pdis: PDIItem[] = [
     {
       id: 1,
@@ -199,9 +197,11 @@ export const PDIList = () => {
           />
         </div>
         
-        <Button className="gap-1">
-          <Plus className="h-4 w-4" />
-          <span>Create New PDI</span>
+        <Button asChild className="gap-1">
+          <Link to="/pdi/new/new">
+            <Plus className="h-4 w-4" />
+            <span>Create New PDI</span>
+          </Link>
         </Button>
       </div>
       
@@ -235,9 +235,11 @@ export const PDIList = () => {
               <p className="text-muted-foreground mt-1">
                 Create a new PDI to get started with development planning.
               </p>
-              <Button className="mt-4 gap-1">
-                <Plus className="h-4 w-4" />
-                <span>Create New PDI</span>
+              <Button asChild className="mt-4 gap-1">
+                <Link to="/pdi/new/new">
+                  <Plus className="h-4 w-4" />
+                  <span>Create New PDI</span>
+                </Link>
               </Button>
             </div>
           ) : (
