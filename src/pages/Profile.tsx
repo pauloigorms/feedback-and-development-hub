@@ -1,5 +1,7 @@
-
 import React from "react";
+import { useParams } from "react-router-dom";
+import { ProfileForm } from "@/components/profile/ProfileForm";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/Card";
 import { UserAvatar } from "@/components/common/UserAvatar";
@@ -7,8 +9,7 @@ import { CalendarClock, Edit, Mail, Phone, User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const Profile = () => {
-  // Mock user data
+const ProfileDetail = () => {
   const user = {
     name: "Alice Johnson",
     position: "Engineering Manager",
@@ -83,9 +84,11 @@ const Profile = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle>Personal Information</CardTitle>
-              <Button variant="outline" size="sm" className="gap-1">
-                <Edit className="h-4 w-4" />
-                <span>Edit</span>
+              <Button variant="outline" size="sm" className="gap-1" asChild>
+                <a href="/profile/edit">
+                  <Edit className="h-4 w-4" />
+                  <span>Edit</span>
+                </a>
               </Button>
             </CardHeader>
             <CardContent className="pt-4">
@@ -322,6 +325,16 @@ const Profile = () => {
       </div>
     </div>
   );
+};
+
+const Profile = () => {
+  const { action } = useParams<{ action?: string }>();
+  
+  if (action === "edit") {
+    return <ProfileForm />;
+  }
+  
+  return <ProfileDetail />;
 };
 
 export default Profile;

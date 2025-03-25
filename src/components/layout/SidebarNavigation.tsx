@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BarChart, CalendarClock, FileText, Home, User } from "lucide-react";
+import { CalendarClock, FileText, Home, User } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -30,11 +30,6 @@ export const SidebarNavigation = () => {
       title: "PDI",
       icon: FileText,
       path: "/pdi",
-    },
-    {
-      title: "Reports",
-      icon: BarChart,
-      path: "/reports",
     },
     {
       title: "Profile",

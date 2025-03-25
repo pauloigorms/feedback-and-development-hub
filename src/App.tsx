@@ -36,6 +36,7 @@ const App = () => (
             <Route path="/pdi/:id" element={<PDI />} />
             <Route path="/pdi/:id/:action" element={<PDI />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:action" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
