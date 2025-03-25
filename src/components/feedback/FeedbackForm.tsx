@@ -43,22 +43,22 @@ import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   employee: z.string().min(1, {
-    message: "Please select an employee",
+    message: "Por favor, selecione um colaborador",
   }),
   date: z.date({
-    required_error: "Please select a date",
+    required_error: "Por favor, selecione uma data",
   }),
   timeSlot: z.string().min(1, {
-    message: "Please select a time slot",
+    message: "Por favor, selecione um horário",
   }),
   location: z.string().min(1, {
-    message: "Please provide a location",
+    message: "Por favor, forneça uma localização",
   }),
   notes: z.string().max(500, {
-    message: "Notes should be less than 500 characters",
+    message: "Notas devem ter menos de 500 caracteres",
   }),
   topics: z.array(z.string()).min(1, {
-    message: "Add at least one topic to discuss",
+    message: "Adicione pelo menos um tópico para discussão",
   }),
 });
 
@@ -68,29 +68,29 @@ export const FeedbackForm = () => {
   
   // Mock team members
   const teamMembers = [
-    { id: "1", name: "Michael Chen", position: "Software Engineer" },
-    { id: "2", name: "Sarah Williams", position: "Product Designer" },
-    { id: "3", name: "David Kim", position: "Marketing Specialist" },
-    { id: "4", name: "Jessica Rodriguez", position: "Customer Success" },
+    { id: "1", name: "Michael Chen", position: "Engenheiro de Software" },
+    { id: "2", name: "Sarah Williams", position: "Designer de Produto" },
+    { id: "3", name: "David Kim", position: "Especialista em Marketing" },
+    { id: "4", name: "Jessica Rodriguez", position: "Sucesso do Cliente" },
   ];
   
   // Mock time slots
   const timeSlots = [
-    "9:00 AM - 10:00 AM",
-    "10:30 AM - 11:30 AM",
-    "1:00 PM - 2:00 PM",
-    "2:30 PM - 3:30 PM",
-    "4:00 PM - 5:00 PM",
+    "9:00 - 10:00",
+    "10:30 - 11:30",
+    "13:00 - 14:00",
+    "14:30 - 15:30",
+    "16:00 - 17:00",
   ];
   
   // Mock locations
   const locations = [
-    "Meeting Room 1",
-    "Meeting Room 2",
-    "Meeting Room 3",
+    "Sala de Reunião 1",
+    "Sala de Reunião 2",
+    "Sala de Reunião 3",
     "Virtual (Zoom)",
     "Virtual (Teams)",
-    "Coffee Shop",
+    "Cafeteria",
   ];
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -124,9 +124,9 @@ export const FeedbackForm = () => {
   return (
     <Card className="mx-auto max-w-3xl">
       <CardHeader>
-        <CardTitle>Schedule Feedback Session</CardTitle>
+        <CardTitle>Agendar Sessão de Feedback</CardTitle>
         <CardDescription>
-          Create a new 1:1 feedback session with a team member
+          Crie uma nova sessão de feedback 1:1 com um membro da equipe
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -137,14 +137,14 @@ export const FeedbackForm = () => {
               name="employee"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Team Member</FormLabel>
+                  <FormLabel>Membro da Equipe</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a team member" />
+                        <SelectValue placeholder="Selecione um membro da equipe" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -166,7 +166,7 @@ export const FeedbackForm = () => {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel>Data</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -180,7 +180,7 @@ export const FeedbackForm = () => {
                             {field.value ? (
                               format(field.value, "PPP")
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Selecione uma data</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -208,14 +208,14 @@ export const FeedbackForm = () => {
                 name="timeSlot"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Time Slot</FormLabel>
+                    <FormLabel>Horário</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a time slot" />
+                          <SelectValue placeholder="Selecione um horário" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -237,14 +237,14 @@ export const FeedbackForm = () => {
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>Localização</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a location" />
+                        <SelectValue placeholder="Selecione uma localização" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -265,12 +265,12 @@ export const FeedbackForm = () => {
               name="topics"
               render={() => (
                 <FormItem>
-                  <FormLabel>Topics to Discuss</FormLabel>
+                  <FormLabel>Tópicos para Discussão</FormLabel>
                   <div className="space-y-4">
                     <div className="flex gap-2">
                       <FormControl>
                         <Input
-                          placeholder="Add a topic to discuss"
+                          placeholder="Adicione um tópico para discussão"
                           value={newTopic}
                           onChange={(e) => setNewTopic(e.target.value)}
                           onKeyDown={(e) => {
@@ -308,7 +308,7 @@ export const FeedbackForm = () => {
                         ))
                       ) : (
                         <p className="text-sm text-muted-foreground">
-                          No topics added. Add some topics to discuss in the session.
+                          Nenhum tópico adicionado. Adicione alguns tópicos para discussão na sessão.
                         </p>
                       )}
                     </div>
@@ -323,16 +323,16 @@ export const FeedbackForm = () => {
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Preparation Notes</FormLabel>
+                  <FormLabel>Notas de Preparação</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Add any preparation notes or talking points..."
+                      placeholder="Adicione notas de preparação ou pontos de discussão..."
                       className="min-h-32 resize-none"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    These notes will be visible to you only.
+                    Estas notas serão visíveis apenas para você.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -341,9 +341,9 @@ export const FeedbackForm = () => {
             
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline">
-                Cancel
+                Cancelar
               </Button>
-              <Button type="submit">Schedule Session</Button>
+              <Button type="submit">Agendar Sessão</Button>
             </div>
           </form>
         </Form>
